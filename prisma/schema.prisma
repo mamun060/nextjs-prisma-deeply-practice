@@ -10,29 +10,249 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model User{
-//   id Int @id @default(autoincrement())
-//   name String
-//   email String @unique
-//   password String
-//   phone String
-//   city String
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+model user {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  email String @unique @db.VarChar(50)
+  otp String @db.VarChar(10)
 
+  customerProfile customerProfile? // one to one relationship between the user and customerProfile table
+  productWishes productWishes[] // one to many relationship between the user table and product wishes table
+  productCarts productCarts[] // one to many relationship between the user table and product carts table
+  productReview productReview[] // one to many relationship between the user table and product review table
+  invoices invoices[] // one to many relationship between the user table and invoices table
+  productInvoices productInvoices[] // one to many relationship between the user table and productInvoices table
 
-model User {
-  id Int @id @default(autoincrement())
-  name String
-  lastName String?
-  email String @unique
-  role userType
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
 }
 
-enum userType {
-  user
-  agent
-  manager
-  admin
+model customerProfile {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  customerName String @db.VarChar(100)
+  customerAddress String @db.VarChar(500)
+  customerCity String @db.VarChar(100)
+  customerState String @db.VarChar(100)
+  customerPostCode String @db.VarChar(100)
+  customerCountry String @db.VarChar(100)
+  customerPhone String @db.VarChar(100)
+  customerFazx String @db.VarChar(100)
+  shipName String @db.VarChar(100)
+  shipAddress String @db.VarChar(100)
+  shipCity String @db.VarChar(100)
+  shipState String @db.VarChar(100)
+  shipPostCode String @db.VarChar(100)
+  shipCountry String @db.VarChar(100)
+  shipPhone String @db.VarChar(100)
+  
+  userId BigInt @unique @db.UnsignedBigInt
+  user user @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+}
+
+model brand {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  brandName String @db.VarChar(50)
+  brandImg String @db.VarChar(300)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+  products products[] // one to many relationship the produdct and branch
+}
+
+model categories {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  categoryName String @db.VarChar(100)
+  categoryImg String @db.VarChar(300)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+  products products[] // one to many relationship the products table and categories table 
+}
+
+model products {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  title String @db.VarChar(200)
+  short_des String @db.VarChar(300)
+  price String @db.VarChar(50)
+  discount Boolean
+  discount_price String @db.VarChar(50)
+  image String @db.VarChar(300)
+  stock Boolean
+  start Float
+  remark products_remark 
+
+  brandId BigInt @db.UnsignedBigInt
+  brand brand @relation(fields: [brandId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  categoryId BigInt @db.UnsignedBigInt
+  categories categories @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  productDetails productDetails? // one to one relationship to the product details table
+  productSlider productSliders? // one to one relationship between the product table and productSilder table
+  productWishes productWishes[] // one to many relationship between the proudct table and product wishes table
+  productCarts productCarts[] // one to many relationship between the proudct table and product carts table
+  productReview productReview[] // one to many relationship between the proudct table and product review table
+  productInvoices productInvoices[] // one to many relationship between the proudct table and productInvoices table
+
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+}
+
+model productDetails {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  img1 String @db.VarChar(200)
+  img2 String @db.VarChar(200)
+  img3 String @db.VarChar(200)
+  img4 String @db.VarChar(200)
+  img5 String @db.VarChar(200)
+  description String @db.LongText
+  color String @db.VarChar(200)
+  size String @db.VarChar(200)
+  productId BigInt @unique @db.UnsignedBigInt // for one to one relationship
+  products products @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade )
+
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+}
+model productSliders {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  title String @db.VarChar(200)
+  shortDes String @db.VarChar(200)
+  price String @db.VarChar(100)
+  image String @db.VarChar(200)
+ 
+  productId BigInt @unique @db.UnsignedBigInt
+  products products @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+}
+
+model productWishes {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  
+  productId BigInt @db.UnsignedBigInt
+  products products @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  userId BigInt @db.UnsignedBigInt
+  user user @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  udpatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+}
+
+model productCarts {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  userId BigInt @db.UnsignedBigInt
+  productId BigInt @db.UnsignedBigInt
+  color String @db.VarChar(200)
+  size String @db.VarChar(200)
+  qty String @db.VarChar(200)
+  price String @db.VarChar(200)
+  user user @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  products products @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  createAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.DateTime(0) @updatedAt
+}
+
+
+model productReview {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  description String @db.VarChar(1000)
+  rating String @db.VarChar(10)
+  
+  userId BigInt @db.UnsignedBigInt
+  user user @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  productId BigInt @db.UnsignedBigInt
+  products products @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+}
+
+model sllcommerzAccounts {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  storeId String @db.VarChar(255)
+  storePassword String @db.VarChar(255)
+  currency String @db.VarChar(255)
+  successUrl String @db.VarChar(255)
+  failUrl String @db.VarChar(255)
+  cancelUrl  String @db.VarChar(255)
+  ipnUrl  String @db.VarChar(255)
+  initUrl  String @db.VarChar(255)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+}
+
+model policies {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  type policies_type
+  description String @db.LongText
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+}
+
+model invoices {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  total String @db.VarChar(50)
+  vat String @db.VarChar(50)
+  payable String @db.VarChar(50)
+  customerDetails String @db.VarChar(500)
+  shipmentDetails String @db.VarChar(500)
+  transectionId String @db.VarChar(500)
+  valId String @db.VarChar(500)
+  deliveryStatus invoice_delivery_status
+  paymentStatus String @db.VarChar(255)
+  
+  userId BigInt @db.UnsignedBigInt // foreign_key for user table
+  user user @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  productInvoices productInvoices[] // one to many relationship between the invoice and product invoice table
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+}
+
+
+model productInvoices {
+  id BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  qty String @db.VarChar(50)
+  salePrice String @db.VarChar(50)
+  
+  invoiceId BigInt @db.UnsignedBigInt
+  invoices invoices @relation(fields: [invoiceId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  
+  productId BigInt @db.UnsignedBigInt
+  products products @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  
+  userId BigInt @db.UnsignedBigInt
+  user user @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @db.Timestamp(0) @updatedAt
+}
+
+
+
+enum products_remark {
+  popular
+  new
+  top
+  special
+  trending
+  regular
+}
+
+enum invoice_delivery_status {
+  Pending
+  Processing
+  Completed
+}
+
+enum policies_type {
+  about
+  refund
+  terms
+  how_to_buy
+  contact
+  complain
 }
