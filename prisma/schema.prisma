@@ -232,7 +232,6 @@ model productInvoices {
 }
 
 
-
 enum products_remark {
   popular
   new
