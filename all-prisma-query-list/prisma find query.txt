@@ -77,12 +77,14 @@ const list = await prisma.User.findMany({
 const usersWithProfile = await prisma.User.findMany({
      include: {profile: true}
 });
+
 console.log(usersWithProfile)
 
 
 const usersWithProfileAndPost = await prisma.User.findMany({
      include: {profile: true,post:true},
 });
+
 console.log(usersWithProfileAndPost)
 
 
