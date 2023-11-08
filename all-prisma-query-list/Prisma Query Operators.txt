@@ -99,8 +99,7 @@ const result = await prisma.Employee.findMany({
 
 
 
-
-======================Date Operators=============================
+====================== Date Operators =============================
 
 1. lt (Less Than): Matches dates that are before the specified date.
 2. lte (Less Than or Equal To): Matches dates that are on or before the specified date.

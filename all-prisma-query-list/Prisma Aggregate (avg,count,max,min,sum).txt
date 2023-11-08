@@ -83,8 +83,6 @@ const result = await prisma.$queryRaw `SELECT * FROM employee`;
 
 
 
-
-
 ======================Comparison Operators======================
 Comparison Operators:
 
